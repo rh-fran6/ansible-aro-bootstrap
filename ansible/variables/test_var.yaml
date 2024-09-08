@@ -33,7 +33,7 @@ vnet:
     name: ansible-aro-cluster-worker-subnet-1
     address_cidr: 10.0.2.0/23
   storageaccount:
-    name: storoageaccountname190
+    name: masstorageaccount01
     sku: Premium_LRS
     resourcegroup: storageaccountrg
     access_tier: Hot
@@ -43,8 +43,6 @@ vnet:
     nfs_sharename: fileshare
     min_tls_version: "TLS1_0"
     publicaccess: "Disabled"
-
-
 
 # outbound-type: Loadbalancer|UserDefinedRouting
 
