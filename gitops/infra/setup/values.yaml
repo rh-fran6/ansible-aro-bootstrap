@@ -1,0 +1,27 @@
+
+storageaccount:
+  block:
+    sku: Premium_LRS
+    sc_name: managed-premium
+  file:
+   sku: Premium_LRS
+   sc_name: azurefiles-premium
+   storageaccountname: masstorageaccount01
+   resourcegroup: storageaccountrg
+  #  accesstier: Hot
+   filesharename: fileshare
+   secretname: sakey-secret
+
+eso:
+  clustersecretstore: akv-cluster-secret-read
+  # namespace: openshift-config
+  akvtenantid: 64dc69e4-d083-49fc-9569-ebece1dd1408
+  vaultname: dd-aro-cluster-akv
+  esoreadsecret: akv-sp-read
+  esoreadsecretns: openshift-operators
+
+entraid: 
+  id: ac52d2dd-b725-4009-b432-6be1fcbe2263
+  secretname: entraid-idp-auth-secret
+  tenantid: d84589ac-9d9c-44f1-a311-ff102f6f8b4e
+  secretKeyinAKV: entraidSecret
