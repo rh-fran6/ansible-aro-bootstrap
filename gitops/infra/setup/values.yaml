@@ -46,16 +46,16 @@ clusterrolebinding:
 ## view       -  A user who cannot make any modifications, but can see most objects in a project. 
 #                They cannot view or modify roles or bindings.
 
-rolebinding:
-  - role: edit
-    groupid: d0b32000-b1db-4eb1-89f3-685b871c0saa
-    projects: 
-      - cat-project
-      - dog-project
+# rolebinding:
+#   - role: edit
+#     groupid: d0b32000-b1db-4eb1-89f3-685b871c0saa
+#     projects: 
+#       - cat-project
+#       - dog-project
 
-  - role: admin
-    groupid: d0b32000-b1db-4eb1-89f3-685b871c0poop
-    projects: 
-      - star-project
-      - moon-project
+#   - role: admin
+#     groupid: d0b32000-b1db-4eb1-89f3-685b871c0poop
+#     projects: 
+#       - star-project
+#       - moon-project
 
