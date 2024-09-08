@@ -24,6 +24,6 @@ spec:
         - name
         email:
         - email
-        group:
+        groups:
         - groups
       issuer: https://login.microsoftonline.com/{{ .Values.entraid.tenantid }}/v2.0
