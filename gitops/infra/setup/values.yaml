@@ -59,3 +59,11 @@ clusterrolebinding:
 #       - star-project
 #       - moon-project
 
+imagemirror:
+  - source: ghcr.io/external-secrets10/external-secrets:v0.10.2
+    mirror: 
+      - acr.com/external-secrets10/external-secrets:v0.10.2
+  - source: ghcr.io/grafana/grafana-operator10@sha256:68ef18a31febdd5d52b0996a516005df2d4e2da9b33d1790ddb4e2313b1172da
+    mirror: 
+      - acr.com/grafana10/grafana-operator10
+

@@ -717,8 +717,6 @@
       ansible.builtin.set_fact: 
         oauth_redirect_url: "https://oauth-openshift.apps.{{ redirect_url.stdout }}.{{ cluster.location }}.aroapp.io/oauth2callback/SSO-EntraID"
 
-        
-
 - name: Create Storage Class secret
   when: storageclass.create
   kubernetes.core.k8s:
@@ -751,6 +749,51 @@
       metadata:
         annotations:
           storageclass.kubernetes.io/is-default-class: 'false'
+
+- name: Retrieve Cluster Pull Secret
+  kubernetes.core.k8s_info:
+    api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
+    username: "{{ userName.stdout }}"
+    host: "{{ apiUrl.stdout }}"
+    validate_certs: false
+    api_version: v1
+    kind: Secret
+    name: pull-secret
+    namespace: openshift-config
+  register: secret_data
+
+- name: Extract secret value
+  set_fact:
+    cloud_secret_value: "{{ secret_data.resources[0].data['.dockerconfigjson'] | b64decode }}"
+
+- name: Define JSON data for merge
+  ansible.builtin.set_fact:
+    new_data:
+      auths:
+        cloud.openshift.com:
+          auth: "{{ pullSecret['auths']['cloud.openshift.com']['auth'] }}"
+          email: "{{ pullSecret['auths']['cloud.openshift.com']['email'] }}"
+
+- name: Merge the cloud.openshift.com values into Pull Secret
+  ansible.builtin.set_fact:
+    merged_auths: "{{ cloud_secret_value.auths | combine(new_data.auths, recursive=True) }}"
+
+- name: Combine merged Dataset
+  ansible.builtin.set_fact:
+    merged_data: "{{ cloud_secret_value | combine({'auths': merged_auths}) }}"
+
+- name: Replace .dockerconfigjson field of the pull secret
+  kubernetes.core.k8s:
+    state: present
+    definition:
+      apiVersion: v1
+      kind: Secret
+      metadata:
+        name: pull-secret
+        namespace: openshift-config
+      type: kubernetes.io/dockerconfigjson
+      data:
+        .dockerconfigjson: "{{ merged_data | to_nice_json | b64encode }}"
 
 - name: Read Default OpenShift Ingress Secret
   kubernetes.core.k8s_info:

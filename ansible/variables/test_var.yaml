@@ -91,6 +91,8 @@ integrations:
     add: true
   entraid:
     add: true
+  insights:
+    enabled: true
 
 installer:
   subscription_id: "18abddda-12e6-42e6-95f2-eef38ba20750"
