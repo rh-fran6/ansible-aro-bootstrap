@@ -8,18 +8,18 @@ operators:
     sourceNamespace: openshift-marketplace
     operatorName: external-secrets-operator
 
-  - name: loki-operator
-    namespace: openshift-operators-redhat
-    channel: stable
-    installPlanApproval: Automatic
-    source: redhat-operators 
-    sourceNamespace: openshift-marketplace
-    operatorName: loki-operator
+  # - name: loki-operator
+  #   namespace: openshift-operators-redhat
+  #   channel: stable
+  #   installPlanApproval: Automatic
+  #   source: redhat-operators 
+  #   sourceNamespace: openshift-marketplace
+  #   operatorName: loki-operator
 
-  - name: cluster-logging
-    namespace: openshift-logging
-    channel: stable
-    installPlanApproval: Automatic
-    source: redhat-operators 
-    sourceNamespace: openshift-marketplace
-    operatorName: cluster-logging
+  # - name: cluster-logging
+  #   namespace: openshift-logging
+  #   channel: stable
+  #   installPlanApproval: Automatic
+  #   source: redhat-operators 
+  #   sourceNamespace: openshift-marketplace
+  #   operatorName: cluster-logging
