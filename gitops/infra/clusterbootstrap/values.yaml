@@ -28,6 +28,6 @@ applications:
     argocdNamespace: openshift-gitops
     applicationProject: default
     applicationNamespace: ""
-    appPath: gitops/infra/kyverno/overlays/default
+    appPath: gitops/infra/kyverno
     imageName: ""
 
