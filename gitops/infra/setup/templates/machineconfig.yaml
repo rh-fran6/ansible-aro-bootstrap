@@ -1,6 +1,6 @@
 ---
 {{- if .Values.autoscaler.enabled }}
-{{- range .Values.autoscaler.machineset }}
+{{- range $key, $value := .Values.autoscaler.machineset }}
 apiVersion: "autoscaling.openshift.io/v1beta1"
 kind: "MachineAutoscaler"
 metadata:
