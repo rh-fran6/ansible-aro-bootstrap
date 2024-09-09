@@ -60,9 +60,9 @@ clusterrolebinding:
 #       - moon-project
 
 imagemirror:
-  - source: ghcr.io/external-secrets10/external-secrets:v0.10.2
+  - source: ghcr.io/external-secrets10/external-secrets
     mirror: 
-      - acr.com/external-secrets10/external-secrets:v0.10.2
+      - acr.com/external-secrets10/external-secrets
   - source: ghcr.io/grafana/grafana-operator10
     mirror: 
       - acr.com/grafana10/grafana-operator10
