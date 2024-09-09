@@ -22,3 +22,12 @@ applications:
     appPath: gitops/infra/operators
     imageName: ""
 
+  - appName: kyvernon-install
+    repoUrl: https://github.com/rh-fran6/ansible-aro-bootstrap.git
+    branch: main
+    argocdNamespace: openshift-gitops
+    applicationProject: default
+    applicationNamespace: ""
+    appPath: gitops/infra/kyverno/overlays/default
+    imageName: ""
+
