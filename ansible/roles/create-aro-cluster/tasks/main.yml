@@ -750,50 +750,149 @@
         annotations:
           storageclass.kubernetes.io/is-default-class: 'false'
 
-- name: Retrieve Cluster Pull Secret
-  kubernetes.core.k8s_info:
-    api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
-    username: "{{ userName.stdout }}"
-    host: "{{ apiUrl.stdout }}"
-    validate_certs: false
-    api_version: v1
-    kind: Secret
-    name: pull-secret
-    namespace: openshift-config
-  register: secret_data
+- name: Install Extended Logging Operators
+  when: integrations.extendedlogging.enabled
+  block:
+    - name: Create Namespaces
+      kubernetes.core.k8s:
+        api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
+        username: "{{ userName.stdout }}"
+        host: "{{ apiUrl.stdout }}"
+        validate_certs: false
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+            name: openshift-operators-redhat 
+            annotations:
+              openshift.io/node-selector: ""
+            labels:
+              openshift.io/cluster-monitoring: "true" 
+              
+    - name: Create Namespaces
+      kubernetes.core.k8s:
+        api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
+        username: "{{ userName.stdout }}"
+        host: "{{ apiUrl.stdout }}"
+        validate_certs: false
+        definition:
+          apiVersion: v1
+          kind: Namespace
+          metadata:
+          name: openshift-logging 
+          annotations:
+              openshift.io/node-selector: ""
+          labels:
+              openshift.io/cluster-logging: "true"
+              openshift.io/cluster-monitoring: "true"
 
-- name: Extract secret value
-  set_fact:
-    cloud_secret_value: "{{ secret_data.resources[0].data['.dockerconfigjson'] | b64decode }}"
+    - name: Create Logging Operator Group
+      kubernetes.core.k8s:
+        api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
+        username: "{{ userName.stdout }}"
+        host: "{{ apiUrl.stdout }}"
+        validate_certs: false
+        definition:
+          apiVersion: operators.coreos.com/v1
+          kind: OperatorGroup
+          metadata:
+            annotations:
+              argocd.argoproj.io/sync-wave: "0"
+            name: cluster-logging
+            namespace: openshift-logging 
+          spec:
+            targetNamespaces:
+            - openshift-logging
 
-- name: Define JSON data for merge
-  ansible.builtin.set_fact:
-    new_data:
-      auths:
-        cloud.openshift.com:
-          auth: "{{ pullSecret['auths']['cloud.openshift.com']['auth'] }}"
-          email: "{{ pullSecret['auths']['cloud.openshift.com']['email'] }}"
+    - name: Install Loki Operator
+      kubernetes.core.k8s:
+        api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
+        username: "{{ userName.stdout }}"
+        host: "{{ apiUrl.stdout }}"
+        validate_certs: false
+        definition:
+          apiVersion: operators.coreos.com/v1alpha1
+          kind: Subscription
+          metadata:
+            name: loki-operator-subscription
+            namespace: openshift-operators-redhat
+          spec:
+            channel:  
+            installPlanApproval: Automatic
+            name: loki-operator 
+            source: redhat-operators 
+            sourceNamespace: openshift-marketplace
 
-- name: Merge the cloud.openshift.com values into Pull Secret
-  ansible.builtin.set_fact:
-    merged_auths: "{{ cloud_secret_value.auths | combine(new_data.auths, recursive=True) }}"
+    - name: Install OpenShift Logging Operator
+      kubernetes.core.k8s:
+        api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
+        username: "{{ userName.stdout }}"
+        host: "{{ apiUrl.stdout }}"
+        validate_certs: false
+        definition:
+          apiVersion: operators.coreos.com/v1alpha1
+          kind: Subscription
+          metadata:
+            name: cluster-logging-subscription
+            namespace: openshift-logging
+          spec:
+            channel:  
+            installPlanApproval: Automatic
+            name: cluster-logging 
+            source: redhat-operators 
+            sourceNamespace: openshift-marketplace
 
-- name: Combine merged Dataset
-  ansible.builtin.set_fact:
-    merged_data: "{{ cloud_secret_value | combine({'auths': merged_auths}) }}"
-
-- name: Replace .dockerconfigjson field of the pull secret
-  kubernetes.core.k8s:
-    state: present
-    definition:
-      apiVersion: v1
-      kind: Secret
-      metadata:
+- name: Enable Insights reporting
+  when: integrations.insights.enabled
+  block:
+    - name: Retrieve Cluster Pull Secret
+      kubernetes.core.k8s_info:
+        api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
+        username: "{{ userName.stdout }}"
+        host: "{{ apiUrl.stdout }}"
+        validate_certs: false
+        api_version: v1
+        kind: Secret
         name: pull-secret
         namespace: openshift-config
-      type: kubernetes.io/dockerconfigjson
-      data:
-        .dockerconfigjson: "{{ merged_data | to_nice_json | b64encode }}"
+      register: secret_data
+
+    - name: Extract secret value
+      set_fact:
+        cloud_secret_value: "{{ secret_data.resources[0].data['.dockerconfigjson'] | b64decode }}"
+    
+    - name: Define JSON data for merge
+      ansible.builtin.set_fact:
+        new_data:
+          auths:
+            cloud.openshift.com:
+              auth: "{{ pullSecret['auths']['cloud.openshift.com']['auth'] }}"
+              email: "{{ pullSecret['auths']['cloud.openshift.com']['email'] }}"
+
+    - name: Merge the cloud.openshift.com values into Pull Secret
+      ansible.builtin.set_fact:
+        merged_auths: "{{ cloud_secret_value.auths | combine(new_data.auths, recursive=True) }}"
+    
+    - name: Combine merged Dataset
+      ansible.builtin.set_fact:
+        merged_data: "{{ cloud_secret_value | combine({'auths': merged_auths}) }}"
+    
+    - name: Replace .dockerconfigjson field of the pull secret
+      kubernetes.core.k8s:
+        api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
+        username: "{{ userName.stdout }}"
+        host: "{{ apiUrl.stdout }}"
+        validate_certs: false
+        state: present
+        definition:
+          apiVersion: v1
+          kind: Secret
+          metadata:
+            name: pull-secret
+            namespace: openshift-config
+          type: kubernetes.io/dockerconfigjson
+          data:
+            .dockerconfigjson: "{{ merged_data | to_nice_json | b64encode }}"
 
 - name: Read Default OpenShift Ingress Secret
   kubernetes.core.k8s_info:

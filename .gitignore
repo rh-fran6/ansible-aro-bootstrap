@@ -5,3 +5,5 @@ ansibel/.vscode/*
 ansible.cfg
 ansible/artefacts/*
 ansible/pullsecret.txt
+*pullsecret*
+*pull-secret*

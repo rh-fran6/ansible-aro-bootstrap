@@ -21,6 +21,9 @@ spec:
     - repoURL: {{ .repoUrl }}
       targetRevision: {{ .branch }}
       path: {{ .appPath }}
+      helm:
+        valuesFiles:
+          - ../../../../ansible/variables/test_var.yaml
   syncPolicy:
     automated: {}
     retry:

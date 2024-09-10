@@ -74,11 +74,11 @@ autoscaler:
   max_aggregate_cpu: 144
   min_aggregate_memory: 192
   max_aggregate_memory: 576
-  min_replica_per_region: 1
-  max_replica_per_region: 3
+  min_replica_per_az: 1
+  max_replica_per_az: 3
   # instance_type: Standard_D16s_v3
   machineset:
-    - ansible-aro-1-fm9cj-worker-eastus1
-    - ansible-aro-1-fm9cj-worker-eastus2
-    - ansible-aro-1-fm9cj-worker-eastus3
+    - masdevcluster-zgqfx-worker-canadacentral1
+    - masdevcluster-zgqfx-worker-canadacentral2
+    - masdevcluster-zgqfx-worker-canadacentral3
 
