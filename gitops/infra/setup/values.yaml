@@ -76,7 +76,7 @@ autoscaler:
   max_aggregate_memory: 576
   min_replica_per_az: 1
   max_replica_per_az: 3
-  # instance_type: Standard_D16s_v3
+  
   machineset:
     - ansible-aro-cluster-1-fm9cj-worker-eastus1
     - ansible-aro-cluster-1-fm9cj-worker-eastus2
