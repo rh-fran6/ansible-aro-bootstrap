@@ -6,7 +6,6 @@ data:
     prometheusK8s	
       baseImage: openshift/prometheus
       retention: "15d"
-      baseImage: openshift/prometheus
       volumeClaimTemplate:
         spec:
           storageClassName: managed-premium
