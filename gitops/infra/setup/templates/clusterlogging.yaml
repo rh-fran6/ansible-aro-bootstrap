@@ -1,4 +1,4 @@
-{{- if .Values.integrations.extendedlogging -}}
+{{- if .Values.integrations.extendedlogging.extendedlogging -}}
 apiVersion: logging.openshift.io/v1
 kind: ClusterLogging
 metadata:

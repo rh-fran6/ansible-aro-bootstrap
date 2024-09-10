@@ -1,4 +1,4 @@
-{{- if .Values.integrations.extendedlogging -}}
+{{- if .Values.integrations.extendedlogging.enabled -}}
 apiVersion: loki.grafana.com/v1
 kind: LokiStack
 metadata:
