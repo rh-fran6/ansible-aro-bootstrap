@@ -1,3 +1,4 @@
+{{ $valuesFile := "../../../../ansible/variables/test_var.yaml" }}
 {{ $appNamespace := .Values.global.openshiftGitopsNamespace }}
 {{- range $key, $value := .Values.applications }}
 apiVersion: argoproj.io/v1alpha1
@@ -21,9 +22,10 @@ spec:
     - repoURL: {{ .repoUrl }}
       targetRevision: {{ .branch }}
       path: {{ .appPath }}
+      ref: values
       helm:
-        valuesFiles:
-          - ../../../../ansible/variables/test_var.yaml
+        valueFiles:
+          - $values/ansible/variables/test_var.yaml
   syncPolicy:
     automated: {}
     retry:

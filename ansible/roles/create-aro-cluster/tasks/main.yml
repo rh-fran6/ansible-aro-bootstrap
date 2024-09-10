@@ -585,7 +585,6 @@
 - name: Bootstrap OpenShift GitOps
   when: integrations.gitops.add
   block:
-
     - name: Create OpenShift GitOps Namespace
       kubernetes.core.k8s:
         state: present
@@ -673,10 +672,6 @@
           - op: add
             path: /spec/plugins/-
             value: gitops-plugin
-    
-    - name: Wait for 3 minutes
-      ansible.builtin.pause:
-        minutes: 3
 
     - name: Create External Secrets Operator Read Secret 
       kubernetes.core.k8s:
@@ -695,16 +690,6 @@
           data:
             ClientID: "{{ akv_read_client_id | b64encode }}"
             ClientSecret: "{{ akv_read_client_secret | b64encode }}"
-
-    - name: Bootstrap Cluster with ArgoCD
-      kubernetes.core.helm:
-        name: cluster-bootstrap
-        api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
-        host: "{{ apiUrl.stdout }}"
-        validate_certs: false
-        chart_ref: "../gitops/infra/clusterbootstrap"
-        release_namespace: platform
-        create_namespace: true
 
 - name: Set up Entra ID integration
   when: integrations.entraid.add
@@ -893,6 +878,23 @@
           type: kubernetes.io/dockerconfigjson
           data:
             .dockerconfigjson: "{{ merged_data | to_nice_json | b64encode }}"
+    
+- name: Wait for 3 minutes for ALL installed Operators to settle
+  ansible.builtin.pause:
+    minutes: 3
+
+- name: Bootstrap OpenShift GitOps
+  when: integrations.gitops.add
+  block:
+    - name: Bootstrap Cluster with ArgoCD
+      kubernetes.core.helm:
+        name: cluster-bootstrap
+        api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
+        host: "{{ apiUrl.stdout }}"
+        validate_certs: false
+        chart_ref: "../gitops/infra/clusterbootstrap"
+        release_namespace: platform
+        create_namespace: true
 
 - name: Read Default OpenShift Ingress Secret
   kubernetes.core.k8s_info:
