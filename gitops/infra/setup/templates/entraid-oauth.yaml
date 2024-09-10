@@ -1,3 +1,4 @@
+{{- if .Values.integrations.entraid.add -}}
 apiVersion: config.openshift.io/v1
 kind: OAuth
 metadata:
@@ -27,3 +28,4 @@ spec:
         groups:
         - groups
       issuer: https://login.microsoftonline.com/{{ .Values.entraid.tenantid }}/v2.0
+{{- end -}}

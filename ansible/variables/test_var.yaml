@@ -97,6 +97,15 @@ integrations:
     enabled: false
   userworkloadmonitoring:
     enabled: true
+  logforwarder:
+    enabled: true
+    azuremonitor:
+      workspaceid: workspaceid
+      secretname: azure-monitor-shared-key
+      akvname: azureMonitorSharedKey
+  imagemirror:
+    enabled: true
+
 
 installer:
   subscription_id: "18abddda-12e6-42e6-95f2-eef38ba20750"

@@ -1,0 +1,11 @@
+{{- if .Values.integration.logforwarder.enabled -}}
+apiVersion: logging.openshift.io/v1
+kind: ClusterLogging
+metadata:
+  name: instance
+  namespace: openshift-logging
+spec:
+  collection:
+    type: vector
+    vector: {}
+{{- end -}}

@@ -1,3 +1,4 @@
+{{- if .Values.integrations.imagemirror.enabled -}}
 apiVersion: config.openshift.io/v1 
 kind: ImageDigestMirrorSet 
 metadata:
@@ -12,3 +13,4 @@ spec:
     source: {{ .source }}
     mirrorSourcePolicy: NeverContactSource
   {{- end }}
+{{- end -}}

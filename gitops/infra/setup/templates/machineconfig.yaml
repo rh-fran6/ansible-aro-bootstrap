@@ -1,4 +1,4 @@
----
+
 {{- if .Values.autoscaler.enabled }}
 {{- range $key, $value := .Values.autoscaler.machineset }}
 apiVersion: "autoscaling.openshift.io/v1beta1"
