@@ -913,11 +913,11 @@
 - name: Debug the found secret
   ansible.builtin.debug:
     msg:
-      - "Default Ingress Secret Name.......... {{ ingress_secret[0].metadata.name }}"
-      - "Entra ID Redirect URL....................{{ oauth_redirect_url }}"
-      - "ARP API URL:....... {{ apiUrl.stdout }}"
-      - "ARO Console:....... {{ consoleUrl.stdout }}"
-      - "ARO Login Username: {{ userName.stdout }}"
+      - "Default Ingress Secret Name...................{{ ingress_secret[0].metadata.name }}"
+      - "Entra ID Redirect URL.........................{{ oauth_redirect_url }}"
+      - "ARP API URL...................................{{ apiUrl.stdout }}"
+      - "ARO Console...................................{{ consoleUrl.stdout }}"
+      - "ARO Login Username............................{{ userName.stdout }}"
 
 - name: Completion
   ansible.builtin.debug:  
