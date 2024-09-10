@@ -1,4 +1,4 @@
-{{- if .Values.integration.logforwarder.enabled -}}
+{{- if .Values.integrations.logforwarder.enabled -}}
 apiVersion: logging.openshift.io/v1
 kind: ClusterLogging
 metadata:
