@@ -9,7 +9,9 @@ cluster_sp_object_id_key: spObjectId
 pull_secret_akv_key: pullSecret
 installer_clientid: AccntclientId
 installer_clientsecret: AccntclientSecret
-
+registryusername: acrUsername
+registrypassword: acrPassword
+registryhostname: acrName
 
 ## Cluster Tags. Max of 10 tags
 tags: 
@@ -105,7 +107,9 @@ integrations:
       akvname: azureMonitorSharedKey
   imagemirror:
     enabled: true
-
+  imageregistry:
+    add: true
+    secretname: registry-secret-name
 
 installer:
   subscription_id: "18abddda-12e6-42e6-95f2-eef38ba20750"
