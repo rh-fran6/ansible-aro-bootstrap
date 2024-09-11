@@ -9,9 +9,6 @@ cluster_sp_object_id_key: spObjectId
 pull_secret_akv_key: pullSecret
 installer_clientid: AccntclientId
 installer_clientsecret: AccntclientSecret
-registryusername: acrUsername
-registrypassword: acrPassword
-registryhostname: acrName
 
 ## Cluster Tags. Max of 10 tags
 tags: 

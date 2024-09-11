@@ -67,6 +67,11 @@ imagemirror:
     mirror: 
       - acr.com/grafana10/grafana-operator10
 
+imageregistry:
+  registryusername: acrUsername
+  registrypassword: acrPassword
+  registryhostname: acrName
+
 autoscaler:
   enabled: true
   max_node_count: 9
