@@ -37,7 +37,7 @@ vnet:
     resourcegroup: storageaccountrg
     access_tier: Hot
     kind: FileStorage
-    public_ip: "75.158.42.195"
+    public_ip: "0.0.0.0"
     privendpointname: storageaccountname190-pe
     nfs_sharename: fileshare
     min_tls_version: "TLS1_0"
@@ -68,7 +68,6 @@ cluster:
   worker_disk: 128
   worker_node_count: 3 
   worker_instance: Standard_D16s_v3 #Standard_D4s_v3 
-  subscription_id: ee0bc28d-c3d4-4efa-a187-c959a251e5f2
   disk_encryption_set: ""
   network:
     vnet_name: ansible-aro-cluster-vnet-1
@@ -107,10 +106,6 @@ integrations:
   imageregistry:
     add: true
     secretname: registry-secret-name
-
-installer:
-  subscription_id: "18abddda-12e6-42e6-95f2-eef38ba20750"
-  tenant_id: "redhat0.onmicrosoft.com"
 
 storageclass:
   create: true
