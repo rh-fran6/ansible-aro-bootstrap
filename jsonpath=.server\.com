@@ -1,1 +1,0 @@
-{"auths":{"server.com":{"username":"name","password":"statateate","email":"unused","auth":"bmFtZTpzdGF0YXRlYXRl"}}}
