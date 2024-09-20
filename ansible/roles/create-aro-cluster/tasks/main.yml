@@ -209,6 +209,9 @@
           - service: "Microsoft.ContainerRegistry"
       register: workerSubnet
 
+- name: Create Storage Class for File backed by NFS 
+  when: storageclass.file.create
+  block:
     - name: Create Resource Groups for Private Endpoint
       azure.azcollection.azure_rm_resourcegroup:
         name: "{{ vnet.storageaccount.resourcegroup }}"
@@ -251,6 +254,7 @@
         enabled_protocols: NFS
     
     - name: Create private endpoint
+      when: cluster.conditionals.create_network_vnet_and_subnets
       azure.azcollection.azure_rm_privateendpoint:
         name: "{{ vnet.storageaccount.privendpointname }}"
         resource_group: "{{ vnet.storageaccount.resourcegroup }}"
@@ -269,10 +273,12 @@
       register: net_int
 
     - name: Extract PE network interface name using regex
+      when: cluster.conditionals.create_network_vnet_and_subnets
       set_fact:
         nic_name: "{{ net_int.state.network_interfaces[0] | regex_search('networkInterfaces/(.*)', '\\1') }}"
     
     - name: Get facts for one network interface
+      when: cluster.conditionals.create_network_vnet_and_subnets
       azure.azcollection.azure_rm_networkinterface_info:
         resource_group: "{{ vnet.storageaccount.resourcegroup }}"
         subscription_id: "{{ installer.subscription_id }}"
@@ -283,10 +289,12 @@
       register: nic_details
 
     - name: Extract the IP Address of the Private Endpoint
+      when: cluster.conditionals.create_network_vnet_and_subnets
       set_fact:
         ip_address: "{{ nic_details.networkinterfaces[0].ip_configurations[0].private_ip_address }}"
 
     - name: Create private DNS zone
+      when: cluster.conditionals.create_network_vnet_and_subnets
       azure.azcollection.azure_rm_privatednszone:
         resource_group: "{{ vnet.storageaccount.resourcegroup }}"
         name: "privatelink.file.core.windows.net"
@@ -296,6 +304,7 @@
         tenant: "{{ installer.tenant_id  }}"
 
     - name: Update virtual network link
+      when: cluster.conditionals.create_network_vnet_and_subnets
       azure.azcollection.azure_rm_privatednszonelink:
         resource_group: "{{ vnet.storageaccount.resourcegroup }}"
         subscription_id: "{{ installer.subscription_id }}"
@@ -309,6 +318,7 @@
         state: present
 
     - name: Create A record in the private DNS zone
+      when: cluster.conditionals.create_network_vnet_and_subnets
       azure.azcollection.azure_rm_privatednsrecordset:
         resource_group: "{{ vnet.storageaccount.resourcegroup }}"
         subscription_id: "{{ installer.subscription_id }}"
@@ -322,6 +332,7 @@
           - entry: "{{ ip_address }}"
 
     - name: Get storage account key
+      when: cluster.conditionals.create_network_vnet_and_subnets
       ansible.builtin.command: az storage account keys list --account-name "{{ vnet.storageaccount.name }}" --query "[0].value" -o tsv --subscription "{{ installer.subscription_id }}"
       register: storageaccount_key
 
@@ -547,7 +558,7 @@
   register: _aro_check
   until: (_aro_check.clusters is defined and _aro_check.clusters.properties is defined and _aro_check.clusters.properties.provisioningState == "Succeeded")
   failed_when: (_aro_check.clusters is defined and _aro_check.clusters.properties is defined and _aro_check.clusters.properties.provisioningState == "Failed")
-  retries: 60
+  retries: 120
   delay: 60
 
 - name: Read ARO API URL
@@ -623,6 +634,9 @@
     password: "{{ passWord.stdout }}"
     host: "{{ apiUrl.stdout }}"
     validate_certs: false
+  retries: 30                 
+  delay: 2                 
+  until: openshift_auth_results.openshift_auth.api_key is defined
 
 - name: Bootstrap OpenShift GitOps
   when: integrations.gitops.add
@@ -745,7 +759,7 @@
         oauth_redirect_url: "https://oauth-openshift.apps.{{ redirect_url.stdout }}.{{ cluster.location }}.aroapp.io/oauth2callback/SSO-EntraID"
 
 - name: Create Storage Class secret
-  when: storageclass.create
+  when: storageclass.file.create
   kubernetes.core.k8s:
     state: present
     api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
@@ -764,7 +778,7 @@
         azurestorageaccountkey: "{{ storageaccount_key.stdout }}"
 
 - name: Patch default storageclass
-  when: storageclass.create
+  when: storageclass.block.create
   kubernetes.core.k8s:
     api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
     username: "{{ userName.stdout }}"
@@ -939,7 +953,7 @@
           data:
             .dockerconfigjson: "{{ dockerconfig_b64 }}"
 
-    - name: Apply pull secret patchby linking
+    - name: Apply pull secret patch by linking
       when: integrations.imageregistry.add
       ansible.builtin.shell: |
         oc login -u "{{ userName.stdout }}" -p "{{ passWord.stdout }}" "{{ apiUrl.stdout }}" && \

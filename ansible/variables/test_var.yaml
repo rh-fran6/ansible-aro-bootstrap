@@ -114,7 +114,10 @@ integrations:
     secretname: registry-secret-name
 
 storageclass:
-  create: true
+  file:
+    create: false
+  block:
+    create: true
 
 
 

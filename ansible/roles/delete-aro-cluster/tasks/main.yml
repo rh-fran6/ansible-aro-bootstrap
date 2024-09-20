@@ -121,7 +121,7 @@
   retries: 60
   delay: 2
 
-- name: Delete Network resources if cluster.conditionals.create_network_vnet_and_subnets is set to True
+- name: Delete Network resources if cluster.conditionals.create_network_vnet_and_subnets is true
   when: cluster.conditionals.create_network_vnet_and_subnets
   block:
     - name: Get facts for one virtual network link in private DNS zone
@@ -136,7 +136,7 @@
       register: salink_ispresent
 
     - name: Remove virtual network link
-      when: salink_ispresent.virtualnetworklinks | length > 0
+      when: salink_ispresent is defined and salink_ispresent.virtualnetworklinks | length > 0 
       azure.azcollection.azure_rm_privatednszonelink:
         resource_group: "{{ vnet.storageaccount.resourcegroup }}"
         subscription_id: "{{ installer.subscription_id }}"
@@ -150,6 +150,7 @@
         state: absent
 
     - name: Remove private DNS zone
+      when: salink_ispresent is defined and salink_ispresent.virtualnetworklinks | length > 0 
       azure.azcollection.azure_rm_privatednszone:
         resource_group: "{{ vnet.storageaccount.resourcegroup }}"
         name: "privatelink.file.core.windows.net"
@@ -308,9 +309,10 @@
   register: rg_facts
 
 - name: Conditionally remove cluster resource group and permissions
-  when: cluster.conditionals.use_aro_sp and rg_facts.resourcegroups | length > 0
+  when: cluster.conditionals.use_aro_sp and rg_facts.resourcegroups | length > 0 
   block:
     - name: Remove Contributor Role SP from Resource Group "{{ cluster.cluster_resource_group }}"
+      when: cluster.conditionals.create_cluster_resource_group
       azure.azcollection.azure_rm_roleassignment:
         scope: "{{ rg_facts.resourcegroups[0].id }}"
         assignee_object_id: "{{ useraccounts.service_principals[0].object_id }}"
@@ -327,7 +329,7 @@
         vnetRG: "{{ vnet.network_rg if cluster.conditionals.create_network_vnet_and_subnets else cluster.network.vnet_rg }}"
      
     - name: Remove Network Contributor Role VNET "{{ vnet.name }}"
-      when: cluster.conditionals.use_aro_sp
+      when: cluster.conditionals.use_aro_sp and cluster.conditionals.create_network_vnet_and_subnets
       azure.azcollection.azure_rm_roleassignment:
         scope: /subscriptions/{{ installer.subscription_id }}/resourceGroups/{{ vnetRG }}/providers/Microsoft.Network/virtualNetworks/{{ vnetName }}
         assignee_object_id: "{{ useraccounts.service_principals[0].object_id }}"
@@ -340,6 +342,7 @@
         state: absent
 
     - name: Delete Cluster Resource Group
+      when: cluster.conditionals.create_cluster_resource_group
       azure.azcollection.azure_rm_resourcegroup:
         name: "{{ cluster.cluster_resource_group }}"
         location: "{{ cluster.location }}"
