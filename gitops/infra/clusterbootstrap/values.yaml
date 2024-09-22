@@ -10,15 +10,7 @@ applications:
     argocdNamespace: openshift-gitops
     applicationProject: default
     applicationNamespace: ""
-    appPath: gitops/infra/setup
+    appPath: gitops/infra/setup-patch
     imageName: ""
   
-  - appName: operator-installs
-    repoUrl: https://github.com/rh-fran6/ansible-aro-bootstrap.git
-    branch: main
-    argocdNamespace: openshift-gitops
-    applicationProject: default
-    applicationNamespace: ""
-    appPath: gitops/infra/operators
-    imageName: ""
 
