@@ -26,6 +26,14 @@ spec:
       helm:
         valueFiles:
           - $values/ansible/variables/test_var.yaml
+  ignoreDifferences:   
+    - group: ""
+      kind: ServiceAccount
+      name: default
+      namespace: default
+      jsonPointers:
+        - /imagePullSecrets
+        - /secrets
   syncPolicy:
     automated: {}
     retry:
@@ -42,6 +50,7 @@ spec:
 {{- end }}    
     syncOptions:
       - CreateNamespace=true
+      - ApplyOutOfSyncOnly=true
       # - ApplyOutOfSyncOnly=true
     retry:
       limit: 5 
