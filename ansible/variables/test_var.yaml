@@ -90,7 +90,7 @@ integrations:
   gitops:
     add: true
     version: "gitops-1.11"
-    helm_repository: https://github.com/rh-fran6/cluster-bootstrapper-app/tree/main/01-clusterbootstrap
+    helm_repository: https://github.com/rh-fran6/ansible-aro-bootstrap/tree/main/gitops/infra/clusterbootstrap
   eso:
     add: true
   entraid:
@@ -112,6 +112,7 @@ integrations:
   imageregistry:
     add: true
     secretname: registry-secret-name
+    email: mymail@mail.com
 
 storageclass:
   file:
