@@ -50,8 +50,7 @@ spec:
       selfHeal: true
 {{- end }}    
     syncOptions:
-    - ServerSideApply=true
-    - Validate=false
+    - RespectIgnoreDifferences=true
     retry:
       limit: 5 
       backoff:
