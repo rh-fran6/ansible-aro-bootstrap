@@ -27,13 +27,14 @@ spec:
         valueFiles:
           - $values/ansible/variables/test_var.yaml
   ignoreDifferences:   
-    - jsonPointers:
-        - /imagePullSecrets
-        - /secrets
+    - group: ""
       kind: ServiceAccount
       name: default
-      group: v1
       namespace: default
+      jsonPointers:
+        - /imagePullSecrets
+        - /secrets
+      
   syncPolicy:
     automated: {}
     retry:
