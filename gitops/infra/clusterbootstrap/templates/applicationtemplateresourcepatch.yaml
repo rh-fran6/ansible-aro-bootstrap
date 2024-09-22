@@ -26,6 +26,14 @@ spec:
       helm:
         valueFiles:
           - $values/ansible/variables/test_var.yaml
+  ignoreDifferences:   
+    - jsonPointers:
+        - /imagePullSecrets
+        - /secrets
+      kind: ServiceAccount
+      name: default
+      group: v1
+      namespace: default
   syncPolicy:
     automated: {}
     retry:
@@ -41,9 +49,8 @@ spec:
       selfHeal: true
 {{- end }}    
     syncOptions:
-      - CreateNamespace=true
-      - ServerSideApply=true
-      - Validate=false
+    - ServerSideApply=true
+    - Validate=false
     retry:
       limit: 5 
       backoff:

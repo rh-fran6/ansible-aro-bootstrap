@@ -4,7 +4,7 @@ global:
 
 applications:
   #  Applications in platform-admin namespace
-  - appName: infra-bootstrap
+  - appName: infra-bootstrap-patch
     repoUrl: https://github.com/rh-fran6/ansible-aro-bootstrap.git
     branch: main
     argocdNamespace: openshift-gitops
