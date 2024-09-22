@@ -123,6 +123,6 @@ storageclass:
 
 
 
-
+# "auth": "{{ printf "%s:%s" `{{ .registryUsername }}` `{{ .registryPassword }}` | b64enc }}"
 
 
