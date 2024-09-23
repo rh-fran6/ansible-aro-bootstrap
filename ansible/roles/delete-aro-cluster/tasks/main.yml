@@ -150,7 +150,7 @@
         state: absent
 
     - name: Remove private DNS zone
-      when: salink_ispresent is defined and salink_ispresent.virtualnetworklinks | length > 0 and storageclass.file.create
+      when: salink_ispresent is defined and salink_ispresent.virtualnetworklinks | length > 0 and storageaccount.file.create
       azure.azcollection.azure_rm_privatednszone:
         resource_group: "{{ vnet.storageaccount.resourcegroup }}"
         name: "privatelink.file.core.windows.net"
@@ -325,7 +325,7 @@
         client_id: "{{ installerClientId | default(omit) }}"
         secret: "{{ installerClientSecret | default(omit) }}"
         tenant: "{{ installer.tenant_id  }}"
-        role_definition_id: "/subscriptions/{{ cluster.subscription_id }}/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
+        role_definition_id: "/subscriptions/{{ installer.subscription_id }}/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
         state: absent
     
     - name: Conditionally set variable names based on the condition settings
@@ -343,7 +343,7 @@
         secret: "{{ installerClientSecret | default(omit) }}"
         tenant: "{{ installer.tenant_id  }}"
         role_definition_id:
-          "/subscriptions/{{ cluster.subscription_id }}/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
+          "/subscriptions/{{ installer.subscription_id }}/providers/Microsoft.Authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7"
         state: absent
 
     - name: Delete Cluster Resource Group
