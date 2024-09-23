@@ -512,15 +512,28 @@
       --verbose
       --no-wait"
 
+# - name: Define Conditionally Added Parameters
+#   ansible.builtin.set_fact:
+#     optional_params:
+#       - { param: 'domain', value: "{{ cluster.domain }}", condition: "{{ cluster.conditionals.specify_custom_domain }}" }
+#       - { param: 'version', value: "{{ cluster.version }}", condition: "{{ cluster.conditionals.specify_version }}" }
+#       - { param: 'disk-encryption-set', value: "{{ cluster.disk_encryption_set }}", condition: "{{ cluster.conditionals.specify_disk_encryption_set }}" }
+#       - { param: 'client-id', value: "{{ clientId }}", condition: "{{ cluster.conditionals.use_aro_sp }}" }
+#       - { param: 'client-secret', value: "{{ clientSecret }}", condition: "{{ cluster.conditionals.use_aro_sp }}" }
+#   no_log: True
+
 - name: Define Conditionally Added Parameters
   ansible.builtin.set_fact:
-    optional_params:
-      - { param: 'domain', value: "{{ cluster.domain }}", condition: "{{ cluster.conditionals.specify_custom_domain }}" }
-      - { param: 'version', value: "{{ cluster.version }}", condition: "{{ cluster.conditionals.specify_version }}" }
-      - { param: 'disk-encryption-set', value: "{{ cluster.disk_encryption_set }}", condition: "{{ cluster.conditionals.specify_disk_encryption_set }}" }
-      - { param: 'client-id', value: "{{ clientId }}", condition: "{{ cluster.conditionals.use_aro_sp }}" }
-      - { param: 'client-secret', value: "{{ clientSecret }}", condition: "{{ cluster.conditionals.use_aro_sp }}" }
+    optional_params: >-
+      {{ [
+        {'param': 'domain', 'value': cluster.domain, 'condition': cluster.conditionals.specify_custom_domain},
+        {'param': 'version', 'value': cluster.version, 'condition': cluster.conditionals.specify_version},
+        {'param': 'disk-encryption-set', 'value': cluster.disk_encryption_set, 'condition': cluster.conditionals.specify_disk_encryption_set},
+        {'param': 'client-id', 'value': clientId, 'condition': cluster.conditionals.use_aro_sp},
+        {'param': 'client-secret', 'value': clientSecret, 'condition': cluster.conditionals.use_aro_sp}
+      ] | selectattr('condition', 'eq', true) | list }}
   no_log: True
+
 
 - name: Reconstruct ARO Deployment command
   ansible.builtin.set_fact:
@@ -759,7 +772,7 @@
         oauth_redirect_url: "https://oauth-openshift.apps.{{ redirect_url.stdout }}.{{ cluster.location }}.aroapp.io/oauth2callback/SSO-EntraID"
 
 - name: Create Storage Class secret
-  when: storageclass.file.create
+  when: storageaccount.file.create
   kubernetes.core.k8s:
     state: present
     api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
@@ -778,7 +791,7 @@
         azurestorageaccountkey: "{{ storageaccount_key.stdout }}"
 
 - name: Patch default storageclass
-  when: storageclass.block.create
+  when: storageaccount.block.create
   kubernetes.core.k8s:
     api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
     username: "{{ userName.stdout }}"
@@ -794,7 +807,7 @@
 - name: Install Extended Logging Operators
   when: integrations.extendedlogging.enabled
   block:
-    - name: Create Namespaces
+    - name: Create Namespaces - openshift-operators-redhat for Loki
       kubernetes.core.k8s:
         api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
         username: "{{ userName.stdout }}"
@@ -804,13 +817,13 @@
           apiVersion: v1
           kind: Namespace
           metadata:
-            name: openshift-operators-redhat 
+            name: openshift-operators-redhat
             annotations:
-              openshift.io/node-selector: ""
+                openshift.io/node-selector: "" 
             labels:
               openshift.io/cluster-monitoring: "true" 
               
-    - name: Create Namespaces
+    - name: Create Namespaces - openshift-logging
       kubernetes.core.k8s:
         api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
         username: "{{ userName.stdout }}"
@@ -820,9 +833,9 @@
           apiVersion: v1
           kind: Namespace
           metadata:
-          name: openshift-logging 
-          annotations:
-              openshift.io/node-selector: ""
+            name: openshift-logging 
+            annotations:
+                openshift.io/node-selector: ""
           labels:
               openshift.io/cluster-logging: "true"
               openshift.io/cluster-monitoring: "true"
@@ -845,7 +858,7 @@
             targetNamespaces:
             - openshift-logging
 
-    - name: Install Loki Operator
+    - name: Install Loki Operator Subscription
       kubernetes.core.k8s:
         api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
         username: "{{ userName.stdout }}"
@@ -855,14 +868,33 @@
           apiVersion: operators.coreos.com/v1alpha1
           kind: Subscription
           metadata:
-            name: loki-operator-subscription
+            name: loki-operator
             namespace: openshift-operators-redhat
+            labels:
+              operators.coreos.com/loki-operator.openshift-operators-redhat: ""
           spec:
-            channel:  
+            channel: stable-5.9
             installPlanApproval: Automatic
             name: loki-operator 
             source: redhat-operators 
             sourceNamespace: openshift-marketplace
+
+    - name: Install Loki Operator Group
+      kubernetes.core.k8s:
+        api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
+        username: "{{ userName.stdout }}"
+        host: "{{ apiUrl.stdout }}"
+        validate_certs: false
+        definition:
+          apiVersion: operators.coreos.com/v1
+          kind: OperatorGroup
+          metadata:
+            annotations:
+              olm.providedAPIs: AlertingRule.v1.loki.grafana.com,LokiStack.v1.loki.grafana.com,RecordingRule.v1.loki.grafana.com,RulerConfig.v1.loki.grafana.com
+            name: openshift-operators-redhat
+            namespace: openshift-operators-redhat
+          spec:
+            upgradeStrategy: Default
 
     - name: Install OpenShift Logging Operator
       kubernetes.core.k8s:
@@ -942,7 +974,7 @@
 - name: Bootstrap ArgoCD App in Apps 
   when: integrations.gitops.add
   block:
-    - name: Bootstrap Cluster with ArgoCD
+    - name: Install Helm Application Bootstrapper
       register: appBootstrap
       kubernetes.core.helm:
         name: cluster-bootstrap
@@ -953,8 +985,8 @@
         release_namespace: platform
         create_namespace: true
       until: (appBootstrap.status is defined and appBootstrap.status.status == "deployed")
-      retries: 1  
-      delay: 10  
+      retries: 60  
+      delay: 2 
 
 - name: Read Default OpenShift Ingress Secret
   kubernetes.core.k8s_info:

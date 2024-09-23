@@ -2,7 +2,7 @@
 - name: Delete OpenShift Cluster & Environment
   hosts: localhost
   connection: local
-  gather_facts: false
+  gather_facts: true
 
   vars_files:
     - variables/test_var.yaml

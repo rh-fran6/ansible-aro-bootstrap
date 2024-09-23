@@ -152,7 +152,7 @@
     - name: Remove private DNS zone
       when: salink_ispresent is defined and salink_ispresent.virtualnetworklinks | length > 0 and storageaccount.file.create
       azure.azcollection.azure_rm_privatednszone:
-        resource_group: "{{ vnet.storageaccount.resourcegroup }}"
+        resource_group: "{{ storageaccount.resourcegroup }}"
         name: "privatelink.file.core.windows.net"
         subscription_id: "{{ installer.subscription_id }}"
         client_id: "{{ installerClientId | default(omit) }}"
