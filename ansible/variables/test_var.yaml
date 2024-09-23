@@ -7,8 +7,8 @@ cluster_tenant_id_key: tenantId
 cluster_subscription_id_key: subId
 cluster_sp_object_id_key: spObjectId
 pull_secret_akv_key: pullSecret
-installer_clientid: ID #AccntclientId
-installer_clientsecret: SECRET #AccntclientSecret
+installer_clientid: AccntclientId # ID #
+installer_clientsecret: AccntclientSecret  # SECRET #
 imageRegistryHostnameKey: acrName
 imageRegistryUsernameKey: acrUsername
 imageRegistryPasswordKey: acrPassword
@@ -19,38 +19,40 @@ tags:
     value: "test-user" 
   - key: purpose
     value: "test-cluster"
-  - key: company
-    value: redhat
+  - key: tag3
+    value: value3
+  - key: tag4
+    value: value4
+  - key: tag5
+    value: value5
+  - key: tag6
+    value: value6
+  - key: tag7
+    value: value7
+  - key: tag8
+    value: value8
+  - key: tag9
+    value: value9
+  - key: tag10
+    value: value10
 
 ## Parameters if needed to create Network Resources Values
 vnet:
-  name: ansible-aro-cluster-vnet-1
+  name: mas-aro-vnet
   location: eastus
-  network_rg: aro-cluster-network-rg-1 
+  network_rg: mas-aro-vnet-rg
   address_cidr: 10.0.0.0/22
   control_plane: 
-    name: ansible-aro-cluster-control-subnet-1
+    name: mas-aro-cluster-control-subnet
     address_cidr: 10.0.0.0/23
   worker_plane:
-    name: ansible-aro-cluster-worker-subnet-1
+    name: mas-aro-cluster-worker-subnet
     address_cidr: 10.0.2.0/23
-  storageaccount:
-    name: masstorageaccount01
-    sku: Premium_LRS
-    resourcegroup: storageaccountrg
-    access_tier: Hot
-    kind: FileStorage
-    public_ip: "0.0.0.0"
-    privendpointname: storageaccountname190-pe
-    nfs_sharename: fileshare
-    min_tls_version: "TLS1_0"
-    publicaccess: "Disabled"
 
 # outbound-type: Loadbalancer|UserDefinedRouting
-
 cluster:
   conditionals:
-    create_network_vnet_and_subnets: false
+    create_network_vnet_and_subnets: true
     specify_custom_domain: True
     specify_version: True
     specify_disk_encryption_set: False
@@ -62,9 +64,9 @@ cluster:
     enable_fips: False
     use_aro_sp: True
     install_with_sp: true
-    create_cluster_resource_group: false
-    assign_rbac_roles: false
-  name: ansible-aro-cluster-1
+    create_cluster_resource_group: true
+    assign_rbac_roles: true
+  name: mas-aro-cluster
   cluster_resource_group:  placeholderrg   
   location: eastus
   domain: odf1
@@ -90,39 +92,78 @@ integrations:
   gitops:
     add: true
     version: "gitops-1.11"
-    helm_repository: https://github.com/rh-fran6/ansible-aro-bootstrap/tree/main/gitops/infra/clusterbootstrap
   eso:
     add: true
+    clustersecretstore: akv-cluster-secret-read
+    akvtenantid: 64dc69e4-d083-49fc-9569-ebece1dd1408
+    vaultname: dd-aro-cluster-akv
+    esoreadsecret: akv-sp-read
+    esoreadsecretns: openshift-operators
   entraid:
     add: true
+    id: ac52d2dd-b725-4009-b432-6be1fcbe2263
+    secretname: entraid-idp-auth-secret
+    tenantid: d84589ac-9d9c-44f1-a311-ff102f6f8b4e
+    secretKeyinAKV: entraidSecret
   insights:
     enabled: true
   extendedlogging:
-    enabled: false
+    enabled: true
   userworkloadmonitoring:
     enabled: true
   logforwarder:
     enabled: true
     azuremonitor:
-      workspaceid: workspaceid
-      secretname: azure-monitor-shared-key
+      workspaceid: masworkspaceid
+      secretname: mas-azure-monitor-shared-key
       akvname: azureMonitorSharedKey
   imagemirror:
     enabled: true
   imageregistry:
     add: true
-    secretname: registry-secret-name
+    secretname: mas-registry-secret-name
     email: mymail@mail.com
 
-storageclass:
-  file:
-    create: false
+storageaccount:
+  name: masclusterstorageaccount
+  resourcegroup: masstorageaccountrg
+  location: eastus
+  kind: FileStorage
+  sku: Premium_LRS
+  accesstier: Hot
+  min_tls_version: "TLS1_0"
+  publicaccess: "Disabled"
+  privendpointname: masstorageaccountpe
   block:
     create: true
+    sku: Premium_LRS
+    sc_name: managed-premium
+  file:
+    create: true
+    sku: Premium_LRS
+    sc_name: azurefiles-premium
+    secretname: sakey-secret
+    nfs_sharename: masfileshare
 
+imagemirror:
+  - source: ghcr.io/external-secrets10/external-secrets
+    mirror: 
+      - acr.com/external-secrets10/external-secrets
+  - source: ghcr.io/grafana/grafana-operator10
+    mirror: 
+      - acr.com/grafana10/grafana-operator10
 
+autoscaler:
+  enabled: true
+  max_node_count: 9
+  min_aggregate_cpu: 48
+  max_aggregate_cpu: 144
+  min_aggregate_memory: 192
+  max_aggregate_memory: 576
+  min_replica_per_az: 1
+  max_replica_per_az: 3
 
-
-# "auth": "{{ printf "%s:%s" `{{ .registryUsername }}` `{{ .registryPassword }}` | b64enc }}"
-
-
+  machineset:
+    - mas-aro-cluster-wfgpz-worker-eastus1
+    - mas-aro-cluster-wfgpz-worker-eastus2
+    - mas-aro-cluster-wfgpz-worker-eastus3

@@ -210,12 +210,12 @@
       register: workerSubnet
 
 - name: Create Storage Class for File backed by NFS 
-  when: storageclass.file.create
+  when: storageaccount.file.create
   block:
     - name: Create Resource Groups for Private Endpoint
       azure.azcollection.azure_rm_resourcegroup:
-        name: "{{ vnet.storageaccount.resourcegroup }}"
-        location: "{{ vnet.location }}"
+        name: "{{ storageaccount.resourcegroup }}"
+        location: "{{ storageaccount.location }}"
         subscription_id: "{{ installer.subscription_id }}"
         client_id: "{{ installerClientId | default(omit) }}"
         secret: "{{ installerClientSecret | default(omit) }}"
@@ -225,39 +225,39 @@
     
     - name: Create Storage Account 
       azure.azcollection.azure_rm_storageaccount:
-        resource_group: "{{ vnet.storageaccount.resourcegroup }}"
+        resource_group: "{{ storageaccount.resourcegroup }}"
         subscription_id: "{{ installer.subscription_id }}"
         client_id: "{{ installerClientId | default(omit) }}"
         secret: "{{ installerClientSecret | default(omit) }}"
         tenant: "{{ installer.tenant_id  }}"
-        name: "{{ vnet.storageaccount.name }}"
-        account_type: "{{ vnet.storageaccount.sku }}"
-        access_tier: "{{ vnet.storageaccount.access_tier }}"
-        kind: "{{ vnet.storageaccount.kind }}"
-        minimum_tls_version: "{{ vnet.storageaccount.min_tls_version }}"
+        name: "{{ storageaccount.name }}"
+        account_type: "{{ storageaccount.sku }}"
+        access_tier: "{{ storageaccount.accesstier }}"
+        kind: "{{ storageaccount.kind }}"
+        minimum_tls_version: "{{ storageaccount.min_tls_version }}"
         https_only: false
-        public_network_access: "{{ vnet.storageaccount.publicaccess }}"
+        public_network_access: "{{ storageaccount.publicaccess }}"
         allow_shared_key_access: true
         tags:  "{{ tags | items2dict(key_name='key', value_name='value') }}"
       register: sa
     
     - name: Create share with NFS enabled protocols
       azure.azcollection.azure_rm_storageshare:
-        name: "{{ vnet.storageaccount.nfs_sharename }}"
-        resource_group: "{{ vnet.storageaccount.resourcegroup }}"
+        name: "{{ storageaccount.file.nfs_sharename }}"
+        resource_group: "{{ storageaccount.resourcegroup }}"
         subscription_id: "{{ installer.subscription_id }}"
         client_id: "{{ installerClientId | default(omit) }}"
         secret: "{{ installerClientSecret | default(omit) }}"
         tenant: "{{ installer.tenant_id  }}"
-        account_name: "{{ vnet.storageaccount.name }}"
+        account_name: "{{ storageaccount.name }}"
         root_squash: RootSquash
         enabled_protocols: NFS
     
     - name: Create private endpoint
       when: cluster.conditionals.create_network_vnet_and_subnets
       azure.azcollection.azure_rm_privateendpoint:
-        name: "{{ vnet.storageaccount.privendpointname }}"
-        resource_group: "{{ vnet.storageaccount.resourcegroup }}"
+        name: "{{ storageaccount.privendpointname }}"
+        resource_group: "{{ storageaccount.resourcegroup }}"
         subscription_id: "{{ installer.subscription_id }}"
         client_id: "{{ installerClientId | default(omit) }}"
         secret: "{{ installerClientSecret | default(omit) }}"
@@ -280,7 +280,7 @@
     - name: Get facts for one network interface
       when: cluster.conditionals.create_network_vnet_and_subnets
       azure.azcollection.azure_rm_networkinterface_info:
-        resource_group: "{{ vnet.storageaccount.resourcegroup }}"
+        resource_group: "{{ storageaccount.resourcegroup }}"
         subscription_id: "{{ installer.subscription_id }}"
         client_id: "{{ installerClientId | default(omit) }}"
         secret: "{{ installerClientSecret | default(omit) }}"
@@ -296,7 +296,7 @@
     - name: Create private DNS zone
       when: cluster.conditionals.create_network_vnet_and_subnets
       azure.azcollection.azure_rm_privatednszone:
-        resource_group: "{{ vnet.storageaccount.resourcegroup }}"
+        resource_group: "{{ storageaccount.resourcegroup }}"
         name: "privatelink.file.core.windows.net"
         subscription_id: "{{ installer.subscription_id }}"
         client_id: "{{ installerClientId | default(omit) }}"
@@ -306,7 +306,7 @@
     - name: Update virtual network link
       when: cluster.conditionals.create_network_vnet_and_subnets
       azure.azcollection.azure_rm_privatednszonelink:
-        resource_group: "{{ vnet.storageaccount.resourcegroup }}"
+        resource_group: "{{ storageaccount.resourcegroup }}"
         subscription_id: "{{ installer.subscription_id }}"
         client_id: "{{ installerClientId | default(omit) }}"
         secret: "{{ installerClientSecret | default(omit) }}"
@@ -320,20 +320,20 @@
     - name: Create A record in the private DNS zone
       when: cluster.conditionals.create_network_vnet_and_subnets
       azure.azcollection.azure_rm_privatednsrecordset:
-        resource_group: "{{ vnet.storageaccount.resourcegroup }}"
+        resource_group: "{{ storageaccount.resourcegroup }}"
         subscription_id: "{{ installer.subscription_id }}"
         client_id: "{{ installerClientId | default(omit) }}"
         secret: "{{ installerClientSecret | default(omit) }}"
         tenant: "{{ installer.tenant_id  }}"
         zone_name: "privatelink.file.core.windows.net"
-        relative_name: "{{ vnet.storageaccount.name }}"
+        relative_name: "{{ storageaccount.name }}"
         record_type: A
         records:
           - entry: "{{ ip_address }}"
 
     - name: Get storage account key
       when: cluster.conditionals.create_network_vnet_and_subnets
-      ansible.builtin.command: az storage account keys list --account-name "{{ vnet.storageaccount.name }}" --query "[0].value" -o tsv --subscription "{{ installer.subscription_id }}"
+      ansible.builtin.command: az storage account keys list --account-name "{{ storageaccount.name }}" --query "[0].value" -o tsv --subscription "{{ installer.subscription_id }}"
       register: storageaccount_key
 
 - name: Conditionally set variable names based on the condition settings
@@ -437,7 +437,7 @@
   when: cluster.conditionals.use_aro_sp and cluster.conditionals.assign_rbac_roles
   azure.azcollection.azure_rm_roleassignment:
     role_definition_id: "/subscriptions/{{ installer.subscription_id }}/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
-    scope: "/subscriptions/{{ installer.subscription_id }}/resourceGroups/{{ vnet.storageaccount.resourcegroup }}"
+    scope: "/subscriptions/{{ installer.subscription_id }}/resourceGroups/{{ storageaccount.resourcegroup }}"
     assignee_object_id: "{{ useraccounts.service_principals[0].object_id }}"
     subscription_id: "{{ installer.subscription_id }}"
     client_id: "{{ installerClientId | default(omit) }}"
@@ -770,11 +770,11 @@
       apiVersion: v1
       kind: Secret
       metadata:
-        name: "{{ vnet.storageaccount.name }}"
+        name: "{{ storageaccount.name }}"
         namespace: default
       type: generic
       stringData:
-        azurestorageaccountname: "{{ vnet.storageaccount.name }}"
+        azurestorageaccountname: "{{ storageaccount.name }}"
         azurestorageaccountkey: "{{ storageaccount_key.stdout }}"
 
 - name: Patch default storageclass
@@ -912,53 +912,10 @@
               auth: "{{ pullSecret['auths']['cloud.openshift.com']['auth'] }}"
               email: "{{ pullSecret['auths']['cloud.openshift.com']['email'] }}"
 
-    # - name: Generate the dockerconfig.json using registry data
-    #   when: integrations.imageregistry.add
-    #   ansible.builtin.set_fact:
-    #     registry_data: |
-    #       {
-    #         "auths": {
-    #           "{{ image_registry_hostname['secrets'][0]['secret'] }}": {
-    #             "email": "{{ user }}",
-    #             "auth": "{{ (image_registry_username['secrets'][0]['secret'] + ':' + image_registry_password['secrets'][0]['secret']) | b64encode }}"
-    #           }
-    #         }
-    #       }
-
     - name: Merge Insight Data into Pull Secret
       when: integrations.insights.enabled
       ansible.builtin.set_fact:
         merged_auths: "{{ cloud_secret_value.auths | combine(insight_data.auths, recursive=True) }}"
-
-    # - name: Create Secret for Image pull secret
-    #   when: integrations.imageregistry.add
-    #   ansible.builtin.set_fact:
-    #     dockerconfig_b64: "{{ registry_data | to_json | b64encode }}"
-
-    # - name: Create Image pull Config Secret
-    #   when: integrations.imageregistry.add
-    #   kubernetes.core.k8s:
-    #     api_key: "{{ openshift_auth_results.openshift_auth.api_key }}"
-    #     username: "{{ userName.stdout }}"
-    #     host: "{{ apiUrl.stdout }}"
-    #     validate_certs: false
-    #     state: present
-    #     definition:
-    #       apiVersion: v1
-    #       kind: Secret
-    #       metadata:
-    #         name: acr-registry-secret
-    #         namespace: default 
-    #       type: kubernetes.io/dockerconfigjson
-    #       data:
-    #         .dockerconfigjson: "{{ dockerconfig_b64 }}"
-
-    # - name: Apply pull secret patch by linking
-    #   when: integrations.imageregistry.add
-    #   ansible.builtin.shell: |
-    #     oc login -u "{{ userName.stdout }}" -p "{{ passWord.stdout }}" "{{ apiUrl.stdout }}" --insecure-skip-tls-verify=true && \
-    #     oc secrets link default acr-registry-secret --for=pull && \
-    #     oc logout
     
     - name: Replace .dockerconfigjson field of the pull secret
       when: integrations.insights.enabled

@@ -126,7 +126,7 @@
   block:
     - name: Get facts for one virtual network link in private DNS zone
       azure.azcollection.azure_rm_privatednszonelink_info:
-        resource_group: "{{ vnet.storageaccount.resourcegroup }}"
+        resource_group: "{{ storageaccount.resourcegroup }}"
         subscription_id: "{{ installer.subscription_id }}"
         client_id: "{{ installerClientId | default(omit) }}"
         secret: "{{ installerClientSecret | default(omit) }}"
@@ -138,7 +138,7 @@
     - name: Remove virtual network link
       when: salink_ispresent is defined and salink_ispresent.virtualnetworklinks | length > 0 
       azure.azcollection.azure_rm_privatednszonelink:
-        resource_group: "{{ vnet.storageaccount.resourcegroup }}"
+        resource_group: "{{ storageaccount.resourcegroup }}"
         subscription_id: "{{ installer.subscription_id }}"
         client_id: "{{ installerClientId | default(omit) }}"
         secret: "{{ installerClientSecret | default(omit) }}"
@@ -161,9 +161,9 @@
         state: absent
 
     - name: Remove Resource Group
-      when: storageclass.file.create
+      when: storageaccount.file.create
       azure.azcollection.azure_rm_resourcegroup:
-        name: "{{ vnet.storageaccount.privendpointname }}"
+        name: "{{ storageaccount.privendpointname }}"
         subscription_id: "{{ installer.subscription_id }}"
         client_id: "{{ installerClientId | default(omit) }}"
         secret: "{{ installerClientSecret | default(omit) }}"
@@ -171,25 +171,25 @@
         state: absent
 
     - name: Remove Storage Account
-      when: storageclass.file.create
+      when: storageaccount.file.create
       azure.azcollection.azure_rm_storageaccount:
-        resource_group: "{{ vnet.storageaccount.resourcegroup }}"
+        resource_group: "{{ storageaccount.resourcegroup }}"
         subscription_id: "{{ installer.subscription_id }}"
         client_id: "{{ installerClientId | default(omit) }}"
         secret: "{{ installerClientSecret | default(omit) }}"
         tenant: "{{ installer.tenant_id  }}"
-        name: "{{ vnet.storageaccount.name }}"
-        account_type: "{{ vnet.storageaccount.sku }}"
-        access_tier: "{{ vnet.storageaccount.access_tier }}"
-        kind: "{{ vnet.storageaccount.kind }}"
+        name: "{{ storageaccount.name }}"
+        account_type: "{{ storageaccount.sku }}"
+        access_tier: "{{ storageaccount.accesstier }}"
+        kind: "{{ storageaccount.kind }}"
         state: absent
 
     - name: Remove Private Endpoint
-      when: cluster.conditionals.create_network_vnet_and_subnets and storageclass.file.create
+      when: cluster.conditionals.create_network_vnet_and_subnets and storageaccount.file.create
       azure.azcollection.azure_rm_privateendpoint:
-        name: "{{ vnet.storageaccount.privendpointname }}"
-        resource_group: "{{ vnet.storageaccount.resourcegroup }}"
-        location: "{{ vnet.location }}"
+        name: "{{ storageaccount.privendpointname }}"
+        resource_group: "{{ storageaccount.resourcegroup }}"
+        location: "{{ storageaccount.location }}"
         subscription_id: "{{ installer.subscription_id }}"
         client_id: "{{ installerClientId | default(omit) }}"
         secret: "{{ installerClientSecret | default(omit) }}"
@@ -295,7 +295,7 @@
   when: cluster.conditionals.use_aro_sp and cluster.conditionals.assign_rbac_roles
   azure.azcollection.azure_rm_roleassignment:
     role_definition_id: "/subscriptions/{{ installer.subscription_id }}/providers/Microsoft.Authorization/roleDefinitions/b24988ac-6180-42a0-ab88-20f7382dd24c"
-    scope: "/subscriptions/{{ installer.subscription_id }}/resourceGroups/{{ vnet.storageaccount.resourcegroup }}"
+    scope: "/subscriptions/{{ installer.subscription_id }}/resourceGroups/{{ storageaccount.resourcegroup }}"
     assignee_object_id: "{{ useraccounts.service_principals[0].object_id }}"
     subscription_id: "{{ installer.subscription_id }}"
     client_id: "{{ installerClientId | default(omit) }}"
