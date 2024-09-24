@@ -9,7 +9,7 @@ spec:
     mappingMethod: claim
     type: OpenID
     openID:
-      clientID: {{ .Values.integrations.entraid.id }}
+      clientID: {{ .Values.integrations.entraid.clientid }}
       clientSecret:
         name: {{ .Values.integrations.entraid.secretname }}
       extraScopes:

@@ -101,7 +101,7 @@ integrations:
     esoreadsecretns: openshift-operators
   entraid:
     add: true
-    id: ac52d2dd-b725-4009-b432-6be1fcbe2263
+    clientid: ac52d2dd-b725-4009-b432-6be1fcbe2263
     secretname: entraid-idp-auth-secret
     tenantid: d84589ac-9d9c-44f1-a311-ff102f6f8b4e
     secretKeyinAKV: entraidSecret
