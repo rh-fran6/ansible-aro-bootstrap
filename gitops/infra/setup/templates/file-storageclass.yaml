@@ -7,12 +7,12 @@ metadata:
     storageclass.kubernetes.io/is-default-class: 'true'
 parameters:
   resourceGroup: {{ .Values.storageaccount.resourcegroup }}
-  server: {{ .Values.storageaccount.name }}.file.core.windows.net #
+  # server: {{ .Values.storageaccount.name }}.file.core.windows.net #
   skuName: {{ .Values.storageaccount.file.sku }}
-  storageAccount: {{ .Values.storageaccount.name }} #
-  secretName: {{ .Values.storageaccount.file.secretname }} #
+  # storageAccount: {{ .Values.storageaccount.name }} #
+  # secretName: {{ .Values.storageaccount.file.secretname }} #
   secretNamespace: "default" #
-  shareName: {{ .Values.storageaccount.file.nfs_sharename }} #
+  # shareName: {{ .Values.storageaccount.file.nfs_sharename }} #
   networkEndpointType: privateEndpoint
   protocol: nfs
 provisioner: file.csi.azure.com
@@ -20,26 +20,3 @@ reclaimPolicy: Delete
 volumeBindingMode: Immediate
 allowVolumeExpansion: true
 {{- end -}}
-# ---
-# {{- if .Values.storageaccount.file.create -}}
-# apiVersion: storage.k8s.io/v1
-# kind: StorageClass
-# metadata:
-#   name: azurefiles-premium
-#   annotations:
-#     storageclass.kubernetes.io/is-default-class: 'true'
-# provisioner: file.csi.azure.com
-# parameters:
-#   protocol: nfs
-#   networkEndpointType: privateEndpoint
-#   location: eastus
-#   resourceGroup: {{ .Values.storageaccount.resourcegroup }}
-#   skuName: {{ .Values.storageaccount.file.sku }}
-#   server: {{ .Values.storageaccount.name }}.file.core.windows.net
-#   storageAccount: {{ .Values.storageaccount.name }}
-#   secretName: {{ .Values.storageaccount.file.secretname }}
-#   secretNamespace: "default"
-# reclaimPolicy: Retain
-# allowVolumeExpansion: true
-# volumeBindingMode: Immediate
-# {{- end -}}
