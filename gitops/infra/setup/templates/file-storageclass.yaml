@@ -36,6 +36,9 @@ parameters:
   resourceGroup: {{ .Values.storageaccount.resourcegroup }}
   skuName: {{ .Values.storageaccount.file.sku }}
   server: {{ .Values.storageaccount.name }}.file.core.windows.net
+  storageAccount: {{ .Values.storageaccount.name }}
+  secretName: {{ .Values.storageaccount.file.secretname }}
+  secretNamespace: "default"
 reclaimPolicy: Retain
 allowVolumeExpansion: true
 volumeBindingMode: Immediate
