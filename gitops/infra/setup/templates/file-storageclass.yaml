@@ -35,6 +35,7 @@ parameters:
   location: eastus
   resourceGroup: {{ .Values.storageaccount.resourcegroup }}
   skuName: {{ .Values.storageaccount.file.sku }}
+  server: {{ .Values.storageaccount.name }}.file.core.windows.net
 reclaimPolicy: Retain
 allowVolumeExpansion: true
 volumeBindingMode: Immediate
