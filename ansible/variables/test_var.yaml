@@ -83,7 +83,7 @@ cluster:
     worker_subnet_name: worker-subnet
     vnet_rg: aro-main
     outbound_type: Loadbalancer  
-    ingress_visibility: Public
+    ingress_visibility: Public 
     api_visibility: Public
     pod_cidr: 10.128.0.0/14
     service_cidr: 172.32.0.0/16  
