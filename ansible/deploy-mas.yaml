@@ -1,0 +1,6 @@
+---
+- hosts: localhost
+  gather_facts: yes
+
+- name: Install MAS
+  ansible.builtin.import_playbook: ibm.mas_devops.oneclick_core
