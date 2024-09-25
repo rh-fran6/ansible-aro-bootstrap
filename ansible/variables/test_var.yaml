@@ -164,6 +164,6 @@ autoscaler:
   max_replica_per_az: 3
 
   machineset:
-    - mas-aro-cluster-fk7zg-worker-eastus1
-    - mas-aro-cluster-fk7zg-worker-eastus2
-    - mas-aro-cluster-fk7zg-worker-eastus3
+    - mas-aro-cluster-fwq7k-worker-eastus1
+    - mas-aro-cluster-fwq7k-worker-eastus1
+    - mas-aro-cluster-fwq7k-worker-eastus1
