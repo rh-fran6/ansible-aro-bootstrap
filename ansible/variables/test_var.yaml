@@ -165,5 +165,5 @@ autoscaler:
 
   machineset:
     - mas-aro-cluster-fwq7k-worker-eastus1
-    - mas-aro-cluster-fwq7k-worker-eastus1
-    - mas-aro-cluster-fwq7k-worker-eastus1
+    - mas-aro-cluster-fwq7k-worker-eastus2
+    - mas-aro-cluster-fwq7k-worker-eastus3
