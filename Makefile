@@ -66,11 +66,11 @@ create-cluster:
 	ansible-playbook ansible/create-cluster.yaml
 
 # Target to deploy MAS
-# ansible-playbook ibm.mas_devops.oneclick_core -v
 .PHONY: deploy-mas
 deploy-mas:
 	source $(VIRTUALENV)/bin/activate && \
 	source ansible/artefacts/setenv-install.sh && \
+	./artefacts/login-script.sh && \
 	ansible-playbook ibm.mas_devops.oneclick_core
 
 # Target to delete the cluster
