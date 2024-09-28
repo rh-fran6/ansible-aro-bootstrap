@@ -12,6 +12,9 @@ installer_clientsecret: AccntclientSecret  # SECRET #
 imageRegistryHostnameKey: acrName
 imageRegistryUsernameKey: acrUsername
 imageRegistryPasswordKey: acrPassword
+masEntitlementKey: masEntitlement
+masLicenseIdKey: masLicenseId
+masLicenseKey: masLicense
 
 ## Cluster Tags. Max of 10 tags
 tags: 
@@ -167,3 +170,22 @@ autoscaler:
     - mas-aro-cluster-sjv44-worker-eastus1
     - mas-aro-cluster-sjv44-worker-eastus2
     - mas-aro-cluster-sjv44-worker-eastus3
+
+## MAS Variable
+mas:
+  prepare_install: true
+  instance_id: mas1
+  config_dir: $PWD/ansible/artefacts
+  license_file: $PWD/artefacts/license.dat
+  dro_email: fanyaegb@redhat.com
+  dro_firstname: Francis
+  dro_lastname: Anyaegbu
+  prometheus_alert_storageclass: managed-csi
+  prometheus_storageclass: azurefiles-premium
+  prometheus_user_storageclass: azurefiles-premium
+  grafana_storageclass: azurefiles-premium
+  mongodb_storageclass: azurefiles-premium
+  uds_storageclass: azurefiles-premium
+
+
+
