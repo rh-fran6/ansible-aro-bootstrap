@@ -176,7 +176,8 @@ mas:
   prepare_install: true
   instance_id: mas1
   config_dir: $PWD/ansible/artefacts
-  license_file: $PWD/artefacts/license.dat
+  ansible_license_path: $PWD/artefacts/license.dat
+  mas_license_path: $PWD/ansible/artefacts/license.dat
   dro_email: fanyaegb@redhat.com
   dro_firstname: Francis
   dro_lastname: Anyaegbu
