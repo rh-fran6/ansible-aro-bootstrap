@@ -15,7 +15,7 @@ spec:
           clientID: {{ .Values.integrations.certmgr.dnszone_client_id }}
           clientSecretSecretRef:
             name: {{ .Values.integrations.certmgr.dnszone_secret_name }}
-            key: {{ .Values.integrations.certmgr.dnszone_secret_key }}
+            key: client-secret
           subscriptionID: {{ .Values.integrations.certmgr.dnszone_sub_id }}
           tenantID: {{ .Values.integrations.certmgr.dnszone_tenant_id }}
           resourceGroupName: {{ .Values.integrations.certmgr.dnszone_rg }}
