@@ -3,7 +3,7 @@
 kind: Certificate
 metadata:
   name: ingress-tls-cert
-  namespace: cert-manager
+  namespace: openshift-ingress
 spec:
   secretName: tls-cert
   issuerRef:
