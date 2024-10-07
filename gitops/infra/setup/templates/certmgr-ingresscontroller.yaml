@@ -16,7 +16,5 @@ spec:
   defaultCertificate:
     name: tls-cert
   httpEmptyRequestsPolicy: Respond
-  httpErrorCodePages:
-    name: ""
   replicas: 3
-{{ - end }}
+{{- end -}}
