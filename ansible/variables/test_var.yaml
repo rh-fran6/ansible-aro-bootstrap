@@ -128,6 +128,7 @@ integrations:
     email: mymail@mail.com
   certmgr:
     enabled: true
+    dnszone_clusterissuer:  azurednszone-letsencrypt
     dnszone_secret_name: cert-manager-secret
     dnszone_secret_key: certmgrDNS
     dnszone_client_id: 74c79125-6396-4443-8c33-f2150a75d302

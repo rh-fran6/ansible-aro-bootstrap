@@ -1,0 +1,15 @@
+
+{{- if .Values.integrations.certmgr.enabled -}}apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ingress-tls-cert
+  namespace: cert-manager
+spec:
+  secretName: tls-cert
+  issuerRef:
+    name: {{ .Values.integrations.certmgr.dnszone_clusterissuer }}
+    kind: ClusterIssuer
+  commonName: {{ .Values.integrations.certmgr.dnszone_name }}
+  dnsNames:
+  - {{ .Values.integrations.certmgr.dnszone_name }}
+{{- end -}}
