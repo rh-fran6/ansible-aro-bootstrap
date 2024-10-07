@@ -133,6 +133,7 @@ integrations:
     dnszone_client_id: 74c79125-6396-4443-8c33-f2150a75d302
     dnszone_sub_id: 18abddda-12e6-42e6-95f2-eef38ba20750
     dnszone_tenant_id: 64dc69e4-d083-49fc-9569-ebece1dd1408
+    dnszone_cert_email: fanyaegb@redhat.com
     dnszone_rg: openenv-s9lk8
     dnszone_name: s9lk8.azure.redhatworkshops.io
 

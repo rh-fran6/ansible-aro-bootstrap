@@ -6,7 +6,9 @@ metadata:
 spec:
   acme:
     server: https://acme-v02.api.letsencrypt.org/directory
-    email: $LETSENCRYPTEMAIL
+    email: {{ .Values.integrations.certmgr.dnszone_cert_email}}
+    privateKeySecretRef:
+      name: azurednszone-letsencrypt-priv-key
     solvers:
     - dns01:
         azureDNS:
