@@ -584,6 +584,11 @@
   changed_when: cluster_create.rc != 0
   when: ( not _aro_check.clusters )
 
+- name: Save pullsecret to artefact directory
+  ansible.builtin.copy:
+    src: pullsecret.txt
+    dest: artefacts/pullsecret.txt
+
 - name: Cleanup Temporary Cluster Creation files
   ansible.builtin.file:
     path: pullsecret.txt
@@ -680,8 +685,8 @@
     password: "{{ passWord.stdout }}"
     host: "{{ apiUrl.stdout }}"
     validate_certs: false
-  retries: 30                 
-  delay: 2                 
+  retries: 60                 
+  delay: 5                 
   until: openshift_auth_results.openshift_auth.api_key is defined
 
 - name: Bootstrap OpenShift GitOps

@@ -1,0 +1,22 @@
+{{- if .Values.integrations.certmgr.enabled -}}
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: azurednszone-letsencrypt
+spec:
+  acme:
+    server: https://acme-v02.api.letsencrypt.org/directory
+    email: $LETSENCRYPTEMAIL
+    solvers:
+    - dns01:
+        azureDNS:
+          clientID: {{ .Values.integrations.certmgr.dnszone_client_id }}
+          clientSecretSecretRef:
+            name: {{ .Values.integrations.certmgr.dnszone_secret_name }}
+            key: {{ .Values.integrations.certmgr.dnszone_secret_key }}
+          subscriptionID: {{ .Values.integrations.certmgr.dnszone_sub_id }}
+          tenantID: {{ .Values.integrations.certmgr.dnszone_tenant_id }}
+          resourceGroupName: {{ .Values.integrations.certmgr.dnszone_rg }}
+          hostedZoneName: {{ .Values.integrations.certmgr.dnszone_name }}
+          environment: AzurePublicCloud
+{{-  end -}}

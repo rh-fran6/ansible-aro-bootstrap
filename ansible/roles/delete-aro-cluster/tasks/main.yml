@@ -94,7 +94,7 @@
     subscriptionId: "{{ cluster_subscription_id['secrets'][0]['secret'] }}"
 
 - name: Set secrets from key vault into reusable variables for SP based parameters
-  when: cluster.conditionals.install_with_sp
+  when: cluster.conditionals.use_installer_sp
   ansible.builtin.set_fact:    
     installerClientId: "{{ installer_client_id['secrets'][0]['secret'] }}"
     installerClientSecret: "{{ installer_client_secret['secrets'][0]['secret'] }}"
@@ -285,10 +285,10 @@
       register: az_net_rg
       until: az_net_rg.resourcegroups | length < 1
       retries: 120
-      delay: 5"
+      delay: 5
 
 - name: Read Service Principal details for cluster
-  when: cluster.conditionals.use_installer_sp
+  when: cluster.conditionals.use_aro_sp and cluster.conditionals.assign_rbac_roles
   azure.azcollection.azure_rm_adserviceprincipal_info:
     app_id: "{{ clientId }}"
     subscription_id: "{{ installer.subscription_id }}"

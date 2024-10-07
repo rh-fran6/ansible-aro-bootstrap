@@ -69,12 +69,6 @@ delete-cluster:
 	source $(VIRTUALENV)/bin/activate && \
 	ansible-playbook ansible/delete-cluster.yaml
 
-# Target to recreate the cluster
-.PHONY: recreate-cluster
-recreate-cluster:
-	source $(VIRTUALENV)/bin/activate && \
-	ansible-playbook ansible/recreate-cluster.yaml
-
 # Delete Cluster, Create Cluster and Deploy MAS 
 .PHONY: redeploy
 redeploy:
