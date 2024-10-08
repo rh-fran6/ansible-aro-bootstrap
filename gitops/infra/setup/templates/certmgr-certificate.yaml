@@ -2,6 +2,8 @@
 {{- if .Values.integrations.certmgr.enabled -}}apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
   name: ingress-tls-cert
   namespace: openshift-ingress
 spec:
