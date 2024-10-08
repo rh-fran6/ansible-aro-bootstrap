@@ -3,6 +3,7 @@ apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: custom-gateway
+  namespace: demo
 spec:
   selector:
     istio: ingressgateway 
