@@ -1,7 +1,9 @@
 # {{- if .Values.integrations.certmgr.enabled -}}
 # apiVersion: operator.openshift.io/v1
 # kind: IngressController
-# metadata:
+# metadata:    
+    # annotations:
+    #   argocd.argoproj.io/sync-wave: "4"
 #   name: custom
 #   namespace: openshift-ingress-operator
 # spec:

@@ -137,6 +137,9 @@ integrations:
     dnszone_cert_email: fanyaegb@redhat.com
     dnszone_rg: openenv-s9lk8
     dnszone_name: s9lk8.azure.redhatworkshops.io
+  
+  ossm:
+    create: true
 
 
 

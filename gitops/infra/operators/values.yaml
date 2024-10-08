@@ -7,4 +7,51 @@ operators:
     source: community-operators 
     sourceNamespace: openshift-marketplace
     operatorName: external-secrets-operator
+    sync_wave: "0"
+
+  - name: elasticsearch-operator
+    namespace: openshift-operators-redhat
+    channel: stable
+    installPlanApproval: Automatic
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    operatorName: elasticsearch-operator
+    sync_wave: "0"
+
+  - name: openshift-cert-manager-operator
+    namespace: cert-manager-operator
+    channel: stable-v1.14
+    installPlanApproval: Automatic
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    operatorName: openshift-cert-manager-operator
+    sync_wave: "0"
+
+  - name: jaeger-product
+    namespace: openshift-distributed-tracing
+    channel: stable
+    installPlanApproval: Automatic
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    operatorName: jaeger-product
+    sync_wave: "1"
+
+  - name: kiali-ossm
+    namespace: openshift-operators
+    channel: stable
+    installPlanApproval: Automatic
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    operatorName: kiali-ossm
+    sync_wave: "1"
+
+  - name: servicemeshoperator
+    namespace: openshift-operators
+    channel: stable
+    installPlanApproval: Automatic
+    source: redhat-operators
+    sourceNamespace: openshift-marketplace
+    operatorName: servicemeshoperator
+    sync_wave: "2"
+
 
