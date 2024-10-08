@@ -6,7 +6,7 @@ metadata:
   namespace: demo
 spec:
   hosts:
-  - "*.s9lk8.azure.redhatworkshops.io"
+  - "echo.s9lk8.azure.redhatworkshops.io"
   gateways:
   - custom-gateway
   http:
