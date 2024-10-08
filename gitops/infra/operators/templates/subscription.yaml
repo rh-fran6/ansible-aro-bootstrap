@@ -42,7 +42,7 @@
   {{- $shouldCreate = $.Values.integrations.certmgr.enabled }}
 {{- end }}
 
-{{- if or (eq $shouldCreate true) (not $shouldCreate) }}
+{{- if eq $shouldCreate true }}
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
@@ -59,4 +59,3 @@ spec:
 ---
 {{- end }}
 {{- end }}
-

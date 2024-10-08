@@ -7,7 +7,7 @@ operators:
     source: community-operators 
     sourceNamespace: openshift-marketplace
     operatorName: external-secrets-operator
-    sync_wave: "0"
+    sync_wave: "'0'"
 
   - name: elasticsearch-operator
     namespace: openshift-operators-redhat
@@ -16,7 +16,7 @@ operators:
     source: redhat-operators
     sourceNamespace: openshift-marketplace
     operatorName: elasticsearch-operator
-    sync_wave: "0"
+    sync_wave: "'0'"
 
   - name: openshift-cert-manager-operator
     namespace: cert-manager-operator
@@ -25,7 +25,7 @@ operators:
     source: redhat-operators
     sourceNamespace: openshift-marketplace
     operatorName: openshift-cert-manager-operator
-    sync_wave: "0"
+    sync_wave: "'0'"
 
   - name: jaeger-product
     namespace: openshift-distributed-tracing
@@ -34,7 +34,7 @@ operators:
     source: redhat-operators
     sourceNamespace: openshift-marketplace
     operatorName: jaeger-product
-    sync_wave: "1"
+    sync_wave: "'1'"
 
   - name: kiali-ossm
     namespace: openshift-operators
@@ -43,7 +43,7 @@ operators:
     source: redhat-operators
     sourceNamespace: openshift-marketplace
     operatorName: kiali-ossm
-    sync_wave: "1"
+    sync_wave: "'1'"
 
   - name: servicemeshoperator
     namespace: openshift-operators
@@ -52,6 +52,6 @@ operators:
     source: redhat-operators
     sourceNamespace: openshift-marketplace
     operatorName: servicemeshoperator
-    sync_wave: "2"
+    sync_wave: "'2'"
 
 
