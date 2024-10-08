@@ -35,7 +35,10 @@ spec:
         - /imagePullSecrets
         - /secrets
   syncPolicy:
-    automated: {}
+    automated:
+      allowEmpty: true
+      prune: true
+      selfHeal: true
     retry:
       limit: 20
     managedNamespaceMetadata:
